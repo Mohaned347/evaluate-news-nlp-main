@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NLP Tool</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div id="container">
+    <h1>Article Sentiment Analyzer</h1>
+    <form id="urlForm">
+      <label for="url">Enter Article URL:</label>
+      <input type="text" id="urlInput" name="url" placeholder="Enter URL">
+      <button type="button" id="clearButton">Clear</button>
+      <br>
+      <button id="sum" type="submit">Analyze</button>
+    </form>
+
+    <div id="result">
+        <p id="loadingText"></p>
+      <!-- The result of the analysis will be displayed here -->
+    </div>
+  </div>
+
+  <script src="./bundle.js"></script>
+</body>
+</html>
