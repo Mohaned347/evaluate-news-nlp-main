@@ -1,6 +1,6 @@
 import { checkForName } from './nameChecker'
 
-const serverURL = 'http://localhost:8800/api'; // Use http for local development
+const serverURL = 'http://localhost:8000/api'; // Use http for local development
 
 const form = document.getElementById('urlForm');
 form.addEventListener('submit', handleSubmit);
