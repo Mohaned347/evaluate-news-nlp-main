@@ -1,44 +1,52 @@
-import { checkForName } from './nameChecker'
+// formHandler.js
 
-const serverURL = 'http://localhost:8000/api'; // Use http for local development
+// Function to validate user input (URL)
+function validateInput(inputText) {
+    const pattern = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?$/;
+    return pattern.test(inputText.trim());
+}
 
-const form = document.getElementById('urlForm');
-form.addEventListener('submit', handleSubmit);
+// Function to call the Meaning Cloud API via the server
+async function analyzeInput(inputURL) {
+    try {
+        const response = await fetch('http://localhost:8800/analyze', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url: inputURL }),
+        });
 
-function handleSubmit(event) {
-    event.preventDefault();
-
-    const formText = document.getElementById('urlInput').value;
-
-    if (isValidURL(formText)) {
-        sendToServer(formText);
-    } else {
-        alert("Please enter a valid URL");
+        const data = await response.json();
+        return processApiResponse(data); // Process API response
+    } catch (error) {
+        console.error('Error analyzing input:', error);
+        throw new Error('Error communicating with the server.');
     }
 }
 
-function isValidURL(url) {
-    const pattern = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?$/;
-    return pattern.test(url);
+// Function to process and format API response
+function processApiResponse(data) {
+    if (data.status && data.status.code === '0') {
+        return {
+            sentiment: formatSentiment(data.score_tag),
+            subjectivity: data.subjectivity,
+            agreement: data.agreement,
+        };
+    } else {
+        throw new Error('Invalid API response.');
+    }
 }
 
-function sendToServer(url) {
-    fetch(serverURL, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ url: url }),
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Success:', data);
-        alert('URL sent successfully!');
-    })
-    .catch((error) => {
-        console.error('Error:', error);
-        alert('Error sending URL');
-    });
+// Helper function to format sentiment results
+function formatSentiment(score) {
+    switch (score) {
+        case 'P+': return 'Strongly Positive';
+        case 'P': return 'Positive';
+        case 'NEU': return 'Neutral';
+        case 'N': return 'Negative';
+        case 'N+': return 'Strongly Negative';
+        case 'NONE': return 'No Sentiment';
+        default: return 'Unknown Sentiment';
+    }
 }
 
-export { handleSubmit };
+export { validateInput, analyzeInput };
